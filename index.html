@@ -9,7 +9,8 @@
 <body>
   <div id="app">
     <h1> {{state}}</h1>
-    <button id="openWallet" class="m-a" @click="open()" v-if="canOpen">打開</button>
+    <h1 v-if="balance">帳號餘額:{{balance}}</h1>
+    <button id="openWallet" class="m-a" @click="open()" v-if="canOpen && account">查看餘額</button>
     <button id="openWallet" class="m-a" @click="login()" v-if="canOpen">登入</button>
     <button id="openWallet" class="m-a" @click="changeAccount()" v-if="canOpen">換帳</button>
     <div id="login-address"></div>
@@ -25,23 +26,24 @@
   </div>
 </body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
-<!-- <script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script>
   const vue = new Vue({
     data() {
         return {
           state:'',
-          account:'',
+          account:null,
           canOpen:false,
+          balance:null
         }
     },
     methods: {
       open(){
         web3 = new Web3(web3.currentProvider);
-        console.log(this.account);
         web3.eth.getBalance(this.account)
           .then(res=>{
+            this.balance = res
+            console.log(res);
             alert("該帳號餘額為"+res)
           });
       },
