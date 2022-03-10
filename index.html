@@ -39,36 +39,17 @@
     },
     methods: {
       open(){
+        console.log(web3.currentProvider);
         web3 = new Web3(web3.currentProvider);
+        console.log('web',web3);
+        console.log('eth',web3.eth);
+        console.log('account',this.account);
         web3.eth.getBalance(this.account)
           .then(res=>{
             this.balance = res
-            console.log(res);
+            console.log('balance',res);
             alert("該帳號餘額為"+res)
           });
-      },
-      openz(){
-        ethereum
-          .request({
-            method: 'wallet_watchAsset',
-            params: {
-              type: 'ERC20',
-              options: {
-                address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
-                symbol: 'IOS',
-                decimals: 36,
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Apple-logo.png/600px-Apple-logo.png',
-              },
-            },
-          })
-          .then((success) => {
-            if (success) {
-              console.log('IOS successfully added to wallet!');
-            } else {
-              throw new Error('Something went wrong.');
-            }
-          })
-          .catch(console.error);
       },
       login(){
         let account = null
