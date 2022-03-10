@@ -39,13 +39,14 @@
     },
     methods: {
       open(){
-        console.log("currentProvider",web3.currentProvider);
-        console.log(web3.currentProvider);
-        web3 = new Web3(web3.currentProvider);
-        console.log('web',web3);
-        console.log('eth',web3.eth);
-        console.log('account',this.account);
-        let that = this
+        var web3 = new Web3(window.location.origin);
+       // console.log("currentProvider",web3.currentProvider);
+       // console.log(web3.currentProvider);
+       // web3 = new Web3(web3.currentProvider);
+       // console.log('web',web3);
+       // console.log('eth',web3.eth);
+       // console.log('account',this.account);
+       // let that = this
         web3.eth.getBalance(this.account)
           .then(function (res){
             that.balance = res
