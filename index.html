@@ -45,10 +45,10 @@
         // console.log('web',web3);
         // console.log('eth',web3.eth);
         // console.log('account',this.account);
-        // let that = this
+        let that = this
         myWeb3.eth.getBalance(this.account)
           .then(function (res){
-            this.balance = res
+            that.balance = res
             console.log('balance',res);
             alert("該帳號餘額為"+res)
           }).catch(function (reason){
