@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <h1> {{state}}</h1>
+    <button id="openWallet" class="m-a" @click="open()" v-if="canOpen">打開</button>
+    <button id="openWallet" class="m-a" @click="login()" v-if="canOpen">登入</button>
+    <button id="openWallet" class="m-a" @click="changeAccount()" v-if="canOpen">換帳</button>
+    <div id="login-address"></div>
+    <h1>支援瀏覽器：</h1>
+    <div class ="browserContent">
+      <a style="text-decoration:none" href="https://apps.apple.com/us/app/metamask/id1438144202" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Apple-logo.png/600px-Apple-logo.png" alt="Chrome" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">IOS APP</div></a>
+      <a style="text-decoration:none" href="https://play.google.com/store/apps/details?id=io.metamask&hl=zh_tw&ref=producthunt" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://source.android.com/setup/images/Android_symbol_green_RGB.png" alt="Chrome" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Andriod APP</div></a>
+      <a style="text-decoration:none" href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://images.ctfassets.net/9sy2a0egs6zh/5CEOSBaSKv43i0mNninl5G/9274e5d9ae5e71bdccf105db385cbd96/chrome_1chrome.png" alt="Chrome" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Chrome</div></a>
+      <a style="text-decoration:none" href="https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://images.ctfassets.net/9sy2a0egs6zh/4WVycyyYvlfuRrArPRjj1d/32b6ef0b5c61f7b58e940293f4d549ad/Firefox_1Firefox.png" alt="Firefox" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Firefox</div></a>
+      <a style="text-decoration:none" href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://images.ctfassets.net/9sy2a0egs6zh/6HcekwtMp9fRFIphaPlqX5/9fc457d259ddead76f05bf5a5aabe2c6/Brave.png" alt="Brave" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Brave</div></a>
+      <a style="text-decoration:none" href="https://microsoftedge.microsoft.com/addons/detail/metamask/ejbalbakoplchlghecdalmeeeajnimhm?hl=en-US" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://images.ctfassets.net/9sy2a0egs6zh/2O0Uh2Nt1OciYoK96DscLF/d6addf88cbe803f18641ce62d1716570/Edge.png" alt="Edge" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Edge</div></a>
+    </div>
+  </div>
+</body>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
+<!-- <script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script>
+  const vue = new Vue({
+    data() {
+        return {
+          state:'',
+          account:'',
+          canOpen:false,
+        }
+    },
+    methods: {
+      open(){
+        web3 = new Web3(web3.currentProvider);
+        console.log(this.account);
+        web3.eth.getBalance(this.account)
+          .then(res=>{
+            alert("該帳號餘額為"+res)
+          });
+      },
+      openz(){
+        ethereum
+          .request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20',
+              options: {
+                address: '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
+                symbol: 'IOS',
+                decimals: 36,
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Apple-logo.png/600px-Apple-logo.png',
+              },
+            },
+          })
+          .then((success) => {
+            if (success) {
+              console.log('IOS successfully added to wallet!');
+            } else {
+              throw new Error('Something went wrong.');
+            }
+          })
+          .catch(console.error);
+      },
+      login(){
+        let account = null
+        let that = this
+        ethereum.request({ method: 'eth_requestAccounts' })
+          .then(function (accounts) {
+            account = accounts[0]
+            that.account = account
+            that.state = `已連結上帳號：${account}`
+
+          }).catch(function (reason) {
+            alert('出錯')
+          })
+      },
+      changeAccount(){
+        ethereum.request({
+          method: 'wallet_requestPermissions',
+          params: [{
+            eth_accounts: {},
+          }]
+        });
+      },
+      judgeState(){
+        if(window.ethereum){
+          if (window.ethereum.isMetaMask) {
+            this.state = "可使用MetaMask"
+            this.canOpen = true
+            console.log(ethereum.isConnected());
+
+              this.login()
+            
+          }else{
+            this.state = "沒有MetaMask"
+            alert('請安装 MetaMask！')
+          }
+        }else{
+          this.state = "沒有MetaMask"
+        }
+      }
+    },
+    mounted() {
+      this.judgeState()
+    }
+})
+vue.$mount("#app")  
+</script>
+<style>
+  .m-a{
+    margin: auto;
+  }
+  #app{
+    text-align: center;
+  }
+  .browserContent{
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+  }
+  .gLgGmT{
+    width: 100px;
+    height: 100px;
+    font-size: large;
+    font-weight: bolder;
+  }
+  .gLgGmT>img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+</style>
+</html>
