@@ -46,7 +46,7 @@
     },
     methods: {
       toEcRecover(){
-        this.web3.eth.personal.ecRecover("Hello wozld", this.sign).then(res=>{
+        this.web3.eth.personal.ecRecover("Hello world", this.sign).then(res=>{
           this.ecRecover = res
           console.log("ecRecover",res);
         })
