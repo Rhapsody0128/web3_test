@@ -10,9 +10,13 @@
   <div id="app">
     <h1> {{state}}</h1>
     <h1 v-if="balance">帳號餘額:{{balance}}</h1>
+    <h1 v-if="sign">sign:{{sign}}</h1>
+    <h1 v-if="ecRecover">ecRecover:{{ecRecover}}</h1>
     <button id="openWallet" class="m-a" @click="open()" v-if="canOpen && account">查看餘額</button>
     <button id="openWallet" class="m-a" @click="login()" v-if="canOpen">登入</button>
     <button id="openWallet" class="m-a" @click="changeAccount()" v-if="canOpen">換帳</button>
+    <button id="openWallet" class="m-a" @click="toSign()" v-if="canOpen && account">簽名</button>
+    <button id="openWallet" class="m-a" @click="toEcRecover()" v-if="canOpen && account && sign">ecRecover</button>
     <div id="login-address"></div>
     <h1>支援瀏覽器：</h1>
     <div class ="browserContent">
@@ -34,19 +38,35 @@
           state:'',
           account:null,
           canOpen:false,
-          balance:null
+          balance:null,
+          web3:null,
+          sign:null,
+          ecRecover:null
         }
     },
     methods: {
-      async open(){
+      toEcRecover(){
+        this.web3.eth.personal.ecRecover("Hello wozld", this.sign).then(res=>{
+          this.ecRecover = res
+          console.log("ecRecover",res);
+        })
+      },
+      toSign(){
+        this.web3.eth.personal.sign("Hello world", this.account, "test passwozzrd!")
+          .then(res=>{
+            console.log("sign",res);
+            this.sign = res
+          });
+      },
+      open(){
         // console.log("currentProvider",web3.currentProvider);
         // console.log(web3.currentProvider);
-        myWeb3 = new Web3(web3.currentProvider);
+        
         // console.log('web',web3);
         // console.log('eth',web3.eth);
         // console.log('account',this.account);
         let that = this
-        myWeb3.eth.getBalance(this.account)
+        this.web3.eth.getBalance(this.account)
           .then(function (res){
             that.balance = res
             console.log('balance',res);
@@ -63,6 +83,7 @@
             account = accounts[0]
             that.account = account
             that.state = `已連結上帳號：${account}`
+            that.web3 = new Web3(web3.currentProvider);
 
           }).catch(function (reason) {
             alert('出錯')
