@@ -114,7 +114,7 @@
         }else{
           this.state = "沒有MetaMask"
         }
-        const provider = await detectEthereumProvider()
+        const provider = await detectEthereumProvider({ timeout: 1000 })
         if(provider){
           alert('has provider')
           this.state = "可使用MetaMask2"
