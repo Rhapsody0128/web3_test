@@ -102,6 +102,7 @@
         });
       },
       async judgeState(){
+        
         if(window.ethereum){
           if (window.ethereum.isMetaMask) {
             this.state = "可使用MetaMask"
@@ -128,6 +129,11 @@
       }
     },
     mounted() {
+      var Accounts = require('web3-eth-accounts');
+
+      // Passing in the eth or web3 package is necessary to allow retrieving chainId, gasPrice and nonce automatically
+      // for accounts.signTransaction().
+      var accounts = new Accounts('ws://rhapsody0128.github.io/web3_test/');
       this.judgeState()
     }
 })
