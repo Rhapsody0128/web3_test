@@ -9,6 +9,7 @@
 <body>
   <div id="app">
     <h1> {{state}}</h1>
+    <h1>test1</h1>
     <h1 v-if="balance">帳號餘額:{{balance}}</h1>
     <h1 v-if="sign">sign:{{sign}}</h1>
     <h1 v-if="ecRecover">ecRecover:{{ecRecover}}</h1>
@@ -107,7 +108,7 @@
             this.login()
             this.canOpen = true
           }else{
-            this.state = "沒有MetaMask"
+            this.state = "沒有MetaMask1"
             alert('請安装 MetaMask！')
           }
         }else{
@@ -116,7 +117,7 @@
         const provider = await detectEthereumProvider()
         if(provider){
           this.web3 = provider
-          this.state = "可使用MetaMask"
+          this.state = "可使用MetaMask2"
           this.login()
           this.canOpen = true
         }
