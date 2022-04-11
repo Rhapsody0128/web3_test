@@ -103,7 +103,7 @@
         if(window.ethereum){
           if (window.ethereum.isMetaMask) {
             this.state = "可使用MetaMask"
-            this.canOpen = true
+            
             this.login()
           }else{
             this.state = "沒有MetaMask"
@@ -112,6 +112,7 @@
         }else{
           this.state = "沒有MetaMask"
         }
+        this.canOpen = true
       }
     },
     mounted() {
