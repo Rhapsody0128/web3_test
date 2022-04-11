@@ -116,11 +116,15 @@
         }
         const provider = await detectEthereumProvider()
         if(provider){
+          alert('has provider')
           this.state = "可使用MetaMask2"
           this.login()
+          this.canOpen = true
+        }else{
+          alert('no provider')
         }
-        this.web3 = provider
         this.canOpen = true
+
       }
     },
     mounted() {
