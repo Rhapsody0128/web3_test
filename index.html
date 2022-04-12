@@ -9,7 +9,7 @@
 <body>
   <div id="app">
     <h1> {{state}}</h1>
-    <h1>test5</h1>
+    <h1>test6</h1>
     <h1 v-if="balance">帳號餘額:{{balance}}</h1>
     <h1 v-if="sign">sign:{{sign}}</h1>
     <h1 v-if="ecRecover">ecRecover:{{ecRecover}}</h1>
@@ -33,7 +33,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
-<script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+<!-- <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script> -->
 <script>
   const vue = new Vue({
     data() {
@@ -102,8 +102,7 @@
       },
 
       tryDeepLink(){
-        console.log();
-        window.open('https://metamask.app.link/dapp/' + window.location.host)
+        window.location = 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname
       },
 
       judgeState(){
