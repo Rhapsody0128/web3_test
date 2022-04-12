@@ -87,7 +87,7 @@
             account = accounts[0]
             that.account = account
             that.state = `已連結上帳號：${account}`
-            that.web3 = new Web3(web3.currentProvider);
+            
 
           }).catch(function (reason) {
             alert('出錯')
@@ -121,6 +121,7 @@
           this.state = "可使用MetaMask2"
           this.login()
           this.canOpen = true
+          console.log(provider);
         }else{
           alert('no provider')
         }
@@ -129,11 +130,7 @@
       }
     },
     mounted() {
-      var Accounts = require('web3-eth-accounts');
-
-      // Passing in the eth or web3 package is necessary to allow retrieving chainId, gasPrice and nonce automatically
-      // for accounts.signTransaction().
-      var accounts = new Accounts('ws://rhapsody0128.github.io/web3_test/');
+      this.web3 = new Web3(web3.currentProvider);
       this.judgeState()
     }
 })
