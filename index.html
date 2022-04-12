@@ -100,6 +100,12 @@
           }]
         });
       },
+
+      tryDeepLink(){
+        console.log();
+        window.open('https://metamask.app.link/dapp/' + window.location.host)
+      },
+
       judgeState(){
         let that = this
         if (window.ethereum) {
@@ -122,7 +128,7 @@
             that.web3 = new Web3(web3.currentProvider);
             // Access the decentralized web!
           } else {
-            that.state = "error"
+            that.tryDeepLink()            
           }
         }
         this.canOpen = true
