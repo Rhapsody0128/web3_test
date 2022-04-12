@@ -39,12 +39,12 @@
     data() {
         return {
           state:'',
-          account:null,
+          account:3,
           canOpen:false,
           balance:null,
-          web3:null,
-          sign:null,
-          ecRecover:null
+          web3:2,
+          sign:1,
+          ecRecover:3
         }
     },
     methods: {
@@ -115,12 +115,10 @@
         }
         const provider = await detectEthereumProvider()
         if(provider){
-          console.log(provider);
           this.state = "可使用MetaMask2"
-
           this.web3 = new Web3(web3.currentProvider);
         }else{
-          this.web3 = new Web3(new Web3.providers.HttpProvider("https://rhapsody0128.github.io/web3_test/"));
+          this.web3 = new Web3(new Web3.providers.HttpProvider("https://rhapsody0128.github.io"));
           this.state = "可使用MetaMask3"
         }
         this.canOpen = true
