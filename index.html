@@ -9,7 +9,7 @@
 <body>
   <div id="app">
     <h1> {{state}}</h1>
-    <h1>test3</h1>
+    <h1>test4</h1>
     <h1 v-if="balance">帳號餘額:{{balance}}</h1>
     <h1 v-if="sign">sign:{{sign}}</h1>
     <h1 v-if="ecRecover">ecRecover:{{ecRecover}}</h1>
@@ -33,7 +33,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-<script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
+<!-- <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script> -->
 <script>
   const vue = new Vue({
     data() {
@@ -106,7 +106,6 @@
           if (window.ethereum.isMetaMask) {
             this.state = "可使用MetaMask"
             // this.login()
-            this.canOpen = true
           }else{
             this.state = "沒有MetaMask1"
             alert('請安装 MetaMask！')
@@ -116,13 +115,19 @@
         }
         const provider = await detectEthereumProvider()
         if(provider){
+          console.log(provider);
           this.state = "可使用MetaMask2"
-          this.canOpen = true
-        }
 
+          this.web3 = new Web3(web3.currentProvider);
+        }else{
+          this.web3 = new Web3(new Web3.providers.HttpProvider("https://rhapsody0128.github.io/web3_test/"));
+          this.state = "可使用MetaMask3"
+        }
+        this.canOpen = true
       }
     },
     mounted() {
+      const web3 = new Web3()
       this.judgeState()
     }
 })
@@ -142,7 +147,6 @@ vue.$mount("#app")
     width: 90%;
     margin: auto;
     display: flex;
-    justify-content: space-around;
   }
   .gLgGmT{
     width: 100px;
@@ -151,8 +155,8 @@ vue.$mount("#app")
     font-weight: bolder;
   }
   .gLgGmT>img{
-    width: 100%;
-    height: 100%;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
   }
 
