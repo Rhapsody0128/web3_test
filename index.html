@@ -20,8 +20,6 @@
     <button id="openWallet" class="m-a" @click="toEcRecover()" v-if="canOpen && account && sign">ecRecover</button>
     <div id="login-address"></div>
     <h1>支援瀏覽器：</h1>
-    <input value="test">
-    <input value="test">
     <div class ="browserContent">
       <a style="text-decoration:none" href="https://apps.apple.com/us/app/metamask/id1438144202" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Apple-logo.png/600px-Apple-logo.png" alt="Chrome" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">IOS APP</div></a>
       <a style="text-decoration:none" href="https://play.google.com/store/apps/details?id=io.metamask&hl=zh_tw&ref=producthunt" target="_blank" rel="noopener" class="DownloadBrowser__BrowserItem-sc-1hmtez9-3 gLgGmT"><img loading="lazy" decoding="async" src="https://source.android.com/setup/images/Android_symbol_green_RGB.png" alt="Chrome" ><div class="DownloadBrowser__BrowserName-sc-1hmtez9-4 hYuwGu">Andriod APP</div></a>
@@ -35,6 +33,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+<script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
 <script>
   const vue = new Vue({
     data() {
@@ -116,6 +115,7 @@
           this.state = "沒有MetaMask"
         }
         const provider = await detectEthereumProvider({ timeout: 1000 })
+        alert(provider)
         if(provider){
           alert('has provider')
           this.state = "可使用MetaMask2"
@@ -130,7 +130,8 @@
       }
     },
     mounted() {
-      this.web3 = new Web3(web3.currentProvider);
+      this.web3 = window.web3.eth.defaultAccount
+      alert(web3)
       this.judgeState()
     }
 })
