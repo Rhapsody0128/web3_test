@@ -32,8 +32,8 @@
 </body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-<script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
 <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
+<script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
 <script>
   const vue = new Vue({
     data() {
@@ -119,6 +119,7 @@
           if (ethereum && ethereum.isMetaMask) {
             that.state = "可使用MetaMask"
             that.login()
+            that.web3 = new Web3(web3.currentProvider);
             // Access the decentralized web!
           } else {
             that.state = "error"
@@ -127,9 +128,10 @@
         this.canOpen = true
       }
     },
-    mounted() {
+    async mounted() {
+      const provider = await detectEthereumProvider()
       this.judgeState()
-      this.web3 = new Web3(web3.currentProvider);
+
     }
 })
 vue.$mount("#app")  
