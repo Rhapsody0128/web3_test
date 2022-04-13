@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "walletconnect": "^1.7.7"
+  },
+  "scripts": {
+    "dev":"node index.html"
+  },
+  "name": "web3_test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Rhapsody0128/web3_test.git",
+  "author": "gary_lai <gary_lai@auer.com.tw>",
+  "license": "MIT"
+}
