@@ -178,7 +178,13 @@
             // display QR Code modal
             this.walletConnectQRCodeModal.open(uri, () => {
               console.log('QR Code Modal closed');
+              
             });
+
+            let qrCode = document.getElementsByClassName("walletconnect-qrcode__image")[0]
+            qrCode.addEventListener("click",()=>{
+              window.open(uri)
+            })
           });
         } else {
           // disconnect
