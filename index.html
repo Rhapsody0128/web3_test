@@ -142,6 +142,7 @@
             // connection is made so we can display all the data
             let account = that.walletConnector.accounts[0]
             that.state = `透過walletConnect已連結上帳號：${account}`
+            that.web3 = new Web3(web3.currentProvider);
             that.account = account
           }
         });
