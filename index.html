@@ -42,7 +42,7 @@
           account:null,
           canOpen:false,
           balance:null,
-          web3:null,
+          web3:new Web3(web3.currentProvider),
           sign:null,
           ecRecover:null,
           walletConnectQRCodeModal:null,
@@ -117,7 +117,6 @@
           const { ethereum } = window;
           if (ethereum && ethereum.isMetaMask) {
             that.state = "可使用MetaMask"
-            that.web3 = new Web3(web3.currentProvider);
             // Access the decentralized web!
           } else {
             that.tryDeepLink()            
@@ -142,7 +141,6 @@
             // connection is made so we can display all the data
             let account = that.walletConnector.accounts[0]
             that.state = `透過walletConnect已連結上帳號：${account}`
-            that.web3 = new Web3(web3.currentProvider);
             that.account = account
           }
         });
@@ -164,6 +162,7 @@
           } else {
             // remove all the data
             console.log('conndisconnectect');
+            that.state = `walletConnect已斷開連線：${account}`
             console.log(that.walletConnector);
           }
         });
