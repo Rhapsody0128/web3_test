@@ -136,17 +136,14 @@
           if(accounts[0]){
             this.account = accounts[0]
             this.state = `已用walletConnect登入${accounts[0]}`
-          }else{
-            this.account = null
-            this.state = '已登出'
-            
           }
         });
         
         
         // Subscribe to session disconnection
         this.walletConnector.on("disconnect", (code, reason) => {
-          console.log(code, reason);
+          this.account = null
+          this.state = '已登出'
         });
       },
       
