@@ -37,9 +37,9 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/@walletconnect/qrcode-modal@1.0.0-beta.46/lib/index.min.js"></script> -->
 
 <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/web3-provider.min.js"></script>
-<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/browser-utils.min.js"></script>
+<!-- <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/browser-utils.min.js"></script>
 <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/qrcode-modal.min.js"></script>
-<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/client.min.js"></script> 
+<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/client.min.js"></script>  -->
 
 <script>
   const vue = new Vue({
@@ -63,7 +63,6 @@
         })
       },
       toSign(){
-        alert("check ur phone")
         this.web3.eth.personal.sign("Hello world", this.account, "test passwozzrd!")
           .then(res=>{
             console.log("sign",res);
@@ -96,6 +95,7 @@
             account = accounts[0]
             that.account = account
             that.state = `透過狐狸錢包已連結上帳號：${account}`
+            that.web3 = new Web3(web3.currentProvider);
             
 
           }).catch(function (reason) {
@@ -112,27 +112,12 @@
 
       judgeState(){
         let that = this
-        if (window.ethereum) {
-          handleEthereum();
+        const { ethereum } = window;
+        if (ethereum && ethereum.isMetaMask) {
+          that.state = "可使用MetaMask"
         } else {
-          window.addEventListener('ethereum#initialized', handleEthereum, {
-            once: true,
-          });
-        
-          // If the event is not dispatched by the end of the timeout,
-          // the user probably doesn't have MetaMask installed.
-          setTimeout(handleEthereum, 3000); // 3 seconds
-        }
- 
-        function handleEthereum() {
-          const { ethereum } = window;
-          if (ethereum && ethereum.isMetaMask) {
-            that.state = "可使用MetaMask"
-            that.web3 = new Web3(web3.currentProvider);
-            // Access the decentralized web!
-          } else {
-            this.walletConnectInit()          
-          }
+          that.state = "沒有MetaMask"
+          that.walletConnectInit()          
         }
         this.canOpen = true
       },
@@ -145,7 +130,6 @@
         });
         
         this.walletConnector = provider
-        this.web3 = new Web3(provider);
 
         this.walletConnector.on("accountsChanged", (accounts) => {
           console.log(accounts);
@@ -159,10 +143,6 @@
           }
         });
         
-        // Subscribe to chainId change
-        this.walletConnector.on("chainChanged", (chainId) => {
-          console.log(chainId);
-        });
         
         // Subscribe to session disconnection
         this.walletConnector.on("disconnect", (code, reason) => {
@@ -171,7 +151,11 @@
       },
       
       walletconnectLogin(){
-        this.walletConnector.enable();
+        try {
+          console.log(this.walletConnector);
+          this.walletConnector.enable();
+          this.web3 = new Web3(this.walletConnector);
+        } catch (error) { console.log(error) }
         
       },
       async walletconnectLogout(){
@@ -180,7 +164,7 @@
     },
     async mounted() {
       this.judgeState()
-      
+      this.walletConnectInit()
       
     }
 })
