@@ -15,6 +15,7 @@
     <button id="openWallet" class="m-a" @click="open()" v-if="canOpen && account">查看餘額</button>
     <button id="openWallet" class="m-a" @click="login()" v-if="canOpen">狐狸登入</button>
     <button id="openWallet" class="m-a" @click="walletconnectLogin()" v-if="canOpen">walletconnect</button>
+    <button id="openWallet" class="m-a" @click="walletconnectLogout()" v-if="canOpen">walletdisconnect</button>
     <button id="openWallet" class="m-a" @click="toSign()" v-if="canOpen && account">簽名</button>
     <button id="openWallet" class="m-a" @click="toEcRecover()" v-if="canOpen && account && sign">ecRecover</button>
     <div id="login-address"></div>
@@ -32,8 +33,14 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/browser@1.0.0-beta.46/lib/index.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/qrcode-modal@1.0.0-beta.46/lib/index.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/@walletconnect/browser@1.0.0-beta.46/lib/index.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@walletconnect/qrcode-modal@1.0.0-beta.46/lib/index.min.js"></script> -->
+
+<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/web3-provider.min.js"></script>
+<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/browser-utils.min.js"></script>
+<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/qrcode-modal.min.js"></script>
+<script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/client.min.js"></script> 
+
 <script>
   const vue = new Vue({
     data() {
@@ -45,7 +52,6 @@
           web3:null,
           sign:null,
           ecRecover:null,
-          walletConnectQRCodeModal:null,
           walletConnector:null
         }
     },
@@ -57,6 +63,7 @@
         })
       },
       toSign(){
+        alert("check ur phone")
         this.web3.eth.personal.sign("Hello world", this.account, "test passwozzrd!")
           .then(res=>{
             console.log("sign",res);
@@ -83,7 +90,8 @@
       login(){
         let account = null
         let that = this
-        ethereum.request({ method: 'eth_requestAccounts' })
+        if(window.ethereum){
+          window.ethereum.request({ method: 'eth_requestAccounts' })
           .then(function (accounts) {
             account = accounts[0]
             that.account = account
@@ -93,6 +101,9 @@
           }).catch(function (reason) {
             alert('出錯')
           })
+        }else{
+          that.tryDeepLink()  
+        }
       },
 
       tryDeepLink(){
@@ -120,84 +131,57 @@
             that.web3 = new Web3(web3.currentProvider);
             // Access the decentralized web!
           } else {
-            that.tryDeepLink()            
+            this.walletConnectInit()          
           }
         }
         this.canOpen = true
       },
+
+
       walletConnectInit(){
-        WalletConnect = window.WalletConnect.default;
-        this.walletConnectQRCodeModal = window.WalletConnectQRCodeModal.default;
-        this.walletConnector = new WalletConnect({
-           bridge: 'https://bridge.walletconnect.org' // Required
+        
+        const provider = new WalletConnectProvider.default({
+          infuraId: "ffbf04604c194d3f920a4bbb57afdccc",
         });
+        
+        this.walletConnector = provider
+        this.web3 = new Web3(provider);
 
-        let that = this
-        this.walletConnector.on('connect', function (error, payload) {
-          if (error) {
-            console.error(error);
-          } else {
-            // Close QR Code Modal
-            that.walletConnectQRCodeModal.close();
-            // connection is made so we can display all the data
-            let account = that.walletConnector.accounts[0]
-            that.state = `透過walletConnect已連結上帳號：${account}`
-            console.log(that.walletConnector);
-            that.account = account
+        this.walletConnector.on("accountsChanged", (accounts) => {
+          console.log(accounts);
+          if(accounts[0]){
+            this.account = accounts[0]
+            this.state = `已用walletConnect登入${accounts[0]}`
+          }else{
+            this.account = null
+            this.state = '已登出'
+            
           }
         });
-      
-        this.walletConnector.on('session_update', function (error, payload) {
-          if (error) {
-            console.error(error);
-          } else if (walletConnector.connected) {
-            // data may be changed
-            console.log('session_update');
-            console.log(that.walletConnector);
-          }
-      
+        
+        // Subscribe to chainId change
+        this.walletConnector.on("chainChanged", (chainId) => {
+          console.log(chainId);
         });
-      
-        this.walletConnector.on('disconnect', function (error, payload) {
-          if (error) {
-            console.error(error);
-          } else {
-            // remove all the data
-            console.log('conndisconnectect');
-            console.log(that.walletConnector);
-          }
+        
+        // Subscribe to session disconnection
+        this.walletConnector.on("disconnect", (code, reason) => {
+          console.log(code, reason);
         });
-
-
       },
       
       walletconnectLogin(){
-        if (!this.walletConnector.connected) {
-          // create new session
-          this.walletConnector.createSession().then(() => {
-            // get uri for QR Code modal
-            var uri = this.walletConnector.uri;
-            // display QR Code modal
-            this.walletConnectQRCodeModal.open(uri, () => {
-              console.log('QR Code Modal closed');
-              
-            });
-
-            let qrCode = document.getElementsByClassName("walletconnect-qrcode__image")[0]
-            qrCode.addEventListener("click",()=>{
-              window.open(uri)
-            })
-          });
-        } else {
-          // disconnect
-          this.walletConnector.killSession();
-        }
+        this.walletConnector.enable();
+        
+      },
+      async walletconnectLogout(){
+        await this.walletConnector.disconnect()
       },
     },
     async mounted() {
       this.judgeState()
-      this.walletConnectInit()
-
+      
+      
     }
 })
 vue.$mount("#app")  
