@@ -31,7 +31,13 @@
         <td class="p">{{contractData.numAvailableToMint}}</td>
       </tr>
     </table>
-    <button id="openWallet" class="m-a" @click="toBuyOne()" v-if="canOpen && account">buyOne</button>
+    <br>
+    <button id="openWallet" class="m-a" @click="toBuy(1)" v-if="canOpen && account">buyOne</button>
+    <button id="openWallet" class="m-a" @click="toBuy(3)" v-if="canOpen && account">buyThree</button>
+    <button id="openWallet" class="m-a" @click="toBuy(9)" v-if="canOpen && account">buyNine</button>
+    <button id="openWallet" class="m-a" @click="toBuy(18)" v-if="canOpen && account">buyEighteen</button>
+    <input v-model="mintWhiteListCount"  v-if="canOpen && account" type="number">
+    <button id="openWallet" class="m-a" @click="toMintWhiteList()" v-if="canOpen && account">mintWhiteList</button>
     
     
     <h1> {{state}}</h1>
@@ -69,7 +75,6 @@
 <!-- <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/browser-utils.min.js"></script>
 <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/qrcode-modal.min.js"></script>
 <script src="https://github.com/WalletConnect/walletconnect-monorepo/releases/download/1.7.7/client.min.js"></script>  -->
-
 <script>
   const vue = new Vue({
     data() {
@@ -92,7 +97,8 @@
             isWhiteListActive:'',
             isRevealActive:'',
             numAvailableToMint:'',
-          }
+          },
+          mintWhiteListCount:0
         }
     },
     methods: {
@@ -217,15 +223,75 @@
         this.contractData.numAvailableToMint = await this.contract.methods.numAvailableToMint(this.account).call()
       },
 
-      async toBuyOne(){
-        let price = await this.contract.methods.NFT_price_for_wl().call()
-        this.contract.methods.buyOne().send({
-          from: this.account,
-          value:price,
-        }).then(res=>{
-          console.log(res);
-        })
-      }
+      async toMintWhiteList(){
+        let whiteListPrice = await this.contract.methods.NFT_price_for_wl().call()
+        if(this.mintWhiteListCount>0){
+          this.contract.methods.mintWhiteList(this.mintWhiteListCount).send({
+            from: this.account,
+            value:whiteListPrice*this.mintWhiteListCount
+          }).then(res=>{
+            this.handleSuccessMint(res)
+          })
+        }
+      },
+      async toBuy(number){
+        let price
+        switch(number){
+          case 1:
+            price = await this.contract.methods.NFT_price_for_1().call()
+            this.contract.methods.buyOne().send({
+              from: this.account,
+              value:price,
+            }).then(res=>{
+              this.handleSuccessBuy(res,number)
+            }).catch(err=>{
+              console.log(err)
+            })
+            break;
+          case 3:
+            price = await this.contract.methods.NFT_price_for_3().call()
+            this.contract.methods.buyThree().send({
+              from: this.account,
+              value:price,
+            }).then(res=>{
+              this.handleSuccessBuy(res,number)
+            }).catch(err=>{
+              console.log(err)
+            })
+            break;
+          case 9:
+            price = await this.contract.methods.NFT_price_for_9().call()
+            this.contract.methods.buyNine().send({
+              from: this.account,
+              value:price,
+            }).then(res=>{
+              this.handleSuccessBuy(res,number)
+            }).catch(err=>{
+              console.log(err)
+            })
+            break;
+          case 18:
+            price = await this.contract.methods.NFT_price_for_18().call()
+            this.contract.methods.buyEighteen().send({
+              from: this.account,
+              value:price,
+            }).then(res=>{
+              this.handleSuccessBuy(res,number)
+            }).catch(err=>{
+              console.log(err)
+            })
+            break;
+          
+        }
+      },
+      handleSuccessMint(res){
+        console.log(this.res);
+        this.state = `成功MintWhiteList,交易代碼是${res.blockHash}`
+      },
+      handleSuccessBuy(res,count){
+        console.log(this.res);
+        this.state = `成功購買${count}盒,交易代碼是${res.blockHash}`
+      },
     },
     async mounted() {
       this.judgeState()
@@ -251,6 +317,7 @@ vue.$mount("#app")
     width: 90%;
     margin: auto;
     display: flex;
+    justify-content: space-around;
   }
   .gLgGmT{
     width: 100px;
@@ -259,8 +326,8 @@ vue.$mount("#app")
     font-weight: bolder;
   }
   .gLgGmT>img{
-    width: 100px;
-    height: 100px;
+    width:100%;
+    height: 100%;
     object-fit: cover;
   }
 
