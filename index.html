@@ -17,7 +17,9 @@
     <button id="openWallet" class="m-a" @click="walletconnectLogin()" v-if="canOpen">walletconnect</button>
     <button id="openWallet" class="m-a" @click="walletconnectLogout()" v-if="canOpen">walletdisconnect</button>
     <button id="openWallet" class="m-a" @click="toSign()" v-if="canOpen && account">簽名</button>
+    <button id="openWallet" class="m-a" @click="toContract()" v-if="canOpen && account">鑄幣</button>
     <button id="openWallet" class="m-a" @click="toEcRecover()" v-if="canOpen && account && sign">ecRecover</button>
+
     <div id="login-address"></div>
     <h1>支援瀏覽器：</h1>
     <div class ="browserContent">
@@ -30,6 +32,7 @@
     </div>
   </div>
 </body>
+<script src='./abiContract.js' ></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js' integrity='sha512-deBbW1lpMT6h3gvOzmeMPft4pf9CMGjCKc5jSNq2pMSjtkMPuELbd4N3LKXVq/t1t6qco4q3u/XguyqGqlOMjA==' crossorigin='anonymous'></script>
 <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 <script src="https://unpkg.com/@metamask/legacy-web3@latest/dist/metamask.web3.min.js"></script>
@@ -142,8 +145,8 @@
         
         // Subscribe to session disconnection
         this.walletConnector.on("disconnect", (code, reason) => {
-          this.account = null
-          this.state = '已登出'
+            this.account = null
+            this.state = '已登出'
         });
       },
       
@@ -158,11 +161,29 @@
       async walletconnectLogout(){
         await this.walletConnector.disconnect()
       },
+      async toContract(){
+        let code = abiContract
+        let address = "0xE0181694C9AE952f1741C2B0361595A6aEd099B3"
+        
+        let myContract = new web3.eth.Contract(abiContract,address,{
+          from:this.account
+        })
+        console.log(myContract);
+
+        myContract.methods.mintTo(this.account).send({
+          from: this.account, // 錢包地址
+          value: this.web3.utils.toWei('0.0000001', 'ether'), // 0.0000001 ETH
+          gas: 400000, // 單位為 wei
+          gasPrice: 21000000000 // 單位為 wei
+          }).then(function (result) {
+              // handle event
+              console.log(result);
+          });
+      },
     },
     async mounted() {
       this.judgeState()
       this.walletConnectInit()
-      
     }
 })
 vue.$mount("#app")  
