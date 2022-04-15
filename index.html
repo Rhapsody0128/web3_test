@@ -8,16 +8,42 @@
 </head>
 <body>
   <div id="app">
+    <h1 v-if="canOpen && account">合約</h1>
+    <table v-if="canOpen && account" class="m-a" border='1'>
+      <tr>
+        <td class="p">name</td>
+        <td class="p">symbol</td>
+        <td class="p">chainId</td>
+        <td class="p">owner</td>
+        <td class="p">isPublicSaleActive</td>
+        <td class="p">isWhiteListActive</td>
+        <td class="p">isRevealActive</td>
+        <td class="p">numAvailableToMint</td>
+      </tr>
+      <tr>
+        <td class="p">{{contractData.name}}</td>
+        <td class="p">{{contractData.symbol}}</td>
+        <td class="p">{{contractData.chainId}}</td>
+        <td class="p">{{contractData.owner}}</td>
+        <td class="p">{{contractData.isPublicSaleActive}}</td>
+        <td class="p">{{contractData.isWhiteListActive}}</td>
+        <td class="p">{{contractData.isRevealActive}}</td>
+        <td class="p">{{contractData.numAvailableToMint}}</td>
+      </tr>
+    </table>
+    <button id="openWallet" class="m-a" @click="toBuyOne()" v-if="canOpen && account">buyOne</button>
+    
+    
     <h1> {{state}}</h1>
     <h1 v-if="balance">帳號餘額:{{balance}}</h1>
     <h1 v-if="sign">sign:{{sign}}</h1>
     <h1 v-if="ecRecover">ecRecover:{{ecRecover}}</h1>
+
     <button id="openWallet" class="m-a" @click="open()" v-if="canOpen && account">查看餘額</button>
     <button id="openWallet" class="m-a" @click="login()" v-if="canOpen">狐狸登入</button>
     <button id="openWallet" class="m-a" @click="walletconnectLogin()" v-if="canOpen">walletconnect</button>
     <button id="openWallet" class="m-a" @click="walletconnectLogout()" v-if="canOpen">walletdisconnect</button>
     <button id="openWallet" class="m-a" @click="toSign()" v-if="canOpen && account">簽名</button>
-    <button id="openWallet" class="m-a" @click="toContract()" v-if="canOpen && account">鑄幣</button>
     <button id="openWallet" class="m-a" @click="toEcRecover()" v-if="canOpen && account && sign">ecRecover</button>
 
     <div id="login-address"></div>
@@ -55,7 +81,18 @@
           web3:null,
           sign:null,
           ecRecover:null,
-          walletConnector:null
+          walletConnector:null,
+          contract:null,
+          contractData:{
+            name:'',
+            symbol:'',
+            chainId:'',
+            owner:'',
+            isPublicSaleActive:'',
+            isWhiteListActive:'',
+            isRevealActive:'',
+            numAvailableToMint:'',
+          }
         }
     },
     methods: {
@@ -100,7 +137,7 @@
             that.state = `透過狐狸錢包已連結上帳號：${account}`
             that.web3 = new Web3(web3.currentProvider);
             
-
+            that.contractInit()
           }).catch(function (reason) {
             alert('出錯')
           })
@@ -139,6 +176,7 @@
           if(accounts[0]){
             this.account = accounts[0]
             this.state = `已用walletConnect登入${accounts[0]}`
+            this.contractInit()
           }
         });
         
@@ -161,25 +199,33 @@
       async walletconnectLogout(){
         await this.walletConnector.disconnect()
       },
-      async toContract(){
-        let code = abiContract
+
+      async contractInit(){
         let address = "0xE0181694C9AE952f1741C2B0361595A6aEd099B3"
-        
-        let myContract = new web3.eth.Contract(abiContract,address,{
+        this.contract = new web3.eth.Contract(abiContract,address,{
           from:this.account
         })
-        console.log(myContract);
-
-        myContract.methods.mintTo(this.account).send({
-          from: this.account, // 錢包地址
-          value: this.web3.utils.toWei('0.0000001', 'ether'), // 0.0000001 ETH
-          gas: 400000, // 單位為 wei
-          gasPrice: 21000000000 // 單位為 wei
-          }).then(function (result) {
-              // handle event
-              console.log(result);
-          });
+        console.log(this.contract);
+        this.contractData.name = await this.contract.methods.name().call()
+        this.contractData.name = await this.contract.methods.name().call()
+        this.contractData.symbol = await this.contract.methods.symbol().call()
+        this.contractData.chainId = await this.contract.methods.getChainId().call()
+        this.contractData.owner = await this.contract.methods.owner().call()
+        this.contractData.isPublicSaleActive = await this.contract.methods.isPublicSaleActive().call()
+        this.contractData.isWhiteListActive = await this.contract.methods.isWhiteListActive().call()
+        this.contractData.isRevealActive = await this.contract.methods.isRevealActive().call()
+        this.contractData.numAvailableToMint = await this.contract.methods.numAvailableToMint(this.account).call()
       },
+
+      async toBuyOne(){
+        let price = await this.contract.methods.NFT_price_for_wl().call()
+        this.contract.methods.buyOne().send({
+          from: this.account,
+          value:price,
+        }).then(res=>{
+          console.log(res);
+        })
+      }
     },
     async mounted() {
       this.judgeState()
@@ -194,6 +240,9 @@ vue.$mount("#app")
   }
   .m-a{
     margin: auto;
+  }
+  .p{
+    padding: 0.5rem;
   }
   #app{
     text-align: center;
