@@ -10,8 +10,8 @@
   <div id="app">
     <h1>
       <span>瀏覽器 : </span>
-      <span v-if="test.isSafari">Safari</span>
-      <span v-if="test.isChrome">Chrome</span>
+      <span v-if="isChrome">Chrome</span>
+      <span v-else>Other</span>
     </h1>
     <h1 v-if="canOpen && account">合約</h1>
     <table v-if="canOpen && account" class="m-a" border='1'>
@@ -104,11 +104,16 @@
             numAvailableToMint:'',
           },
           mintWhiteListCount:0,
-          test:{
-            isSafari:false,
-            isChrome:false
-          }
         }
+    },
+    computed:{
+      isChrome(){
+        if(window.chrome){
+          return true
+        }else{
+          return false
+        }
+      },
     },
     methods: {
       toEcRecover(){
@@ -305,13 +310,7 @@
     async mounted() {
       this.judgeState()
       this.walletConnectInit()
-      var isSafari = navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf("Chrome") == -1; //判斷是否Safari瀏覽器
-      var isChrome = navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Safari") > -1; //判斷Chrome瀏覽器
-      console.log(navigator.userAgent);
-      console.log('isSafari',isSafari);
-      console.log('isChrome',isChrome);
-      this.test.isSafari = isSafari
-      this.test.isChrome = isChrome
+
     }
 })
 vue.$mount("#app")  
