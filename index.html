@@ -8,6 +8,11 @@
 </head>
 <body>
   <div id="app">
+    <h1>
+      <span>瀏覽器 : </span>
+      <span v-if="test.isSafari">Safari</span>
+      <span v-if="test.isChrome">Chrome</span>
+    </h1>
     <h1 v-if="canOpen && account">合約</h1>
     <table v-if="canOpen && account" class="m-a" border='1'>
       <tr>
@@ -98,7 +103,11 @@
             isRevealActive:'',
             numAvailableToMint:'',
           },
-          mintWhiteListCount:0
+          mintWhiteListCount:0,
+          test:{
+            isSafari:false,
+            isChrome:false
+          }
         }
     },
     methods: {
@@ -285,17 +294,24 @@
         }
       },
       handleSuccessMint(res){
-        console.log(this.res);
+        console.log(res);
         this.state = `成功MintWhiteList,交易代碼是${res.blockHash}`
       },
       handleSuccessBuy(res,count){
-        console.log(this.res);
+        console.log(res);
         this.state = `成功購買${count}盒,交易代碼是${res.blockHash}`
       },
     },
     async mounted() {
       this.judgeState()
       this.walletConnectInit()
+      var isSafari = navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf("Chrome") == -1; //判斷是否Safari瀏覽器
+      var isChrome = navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Safari") > -1; //判斷Chrome瀏覽器
+      console.log(navigator.userAgent);
+      console.log('isSafari',isSafari);
+      console.log('isChrome',isChrome);
+      this.test.isSafari = isSafari
+      this.test.isChrome = isChrome
     }
 })
 vue.$mount("#app")  
